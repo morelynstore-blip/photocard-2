@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Biblioteca A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <!-- Biblioteca MindAR para A-Frame -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    /* Botão para desbloquear a reprodução no celular (iOS / Android) */
+    #play-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      padding: 14px 28px;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+  <!-- Botão de Ativação obrigatório para áudio/vídeo mobile -->
+  <button id="play-btn">Toque para Ativar AR</button>
+
+  <!-- 
+    Cena 3D com filtros antitremer ativados:
+    filterMinCF e filterBeta garantem o rastreamento estável sem balanço.
+  -->
+  <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.001;" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights" 
+    vr-mode-ui="enabled: false" 
+    device-orientation-permission-ui="enabled: false">
+    
+    <a-assets>
+      <!-- Cadastro do vídeo do Photocard 2 com permissão crossorigin para evitar tela preta -->
+      <video 
+        id="video2" 
+        src="./video2.mp4" 
+        crossorigin="anonymous" 
+        preload="auto" 
+        loop 
+        webkit-playsinline 
+        playsinline>
+      </video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- Rastreamento do Photocard 2 (targetIndex: 0 se for o único no arquivo targets.mind) -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-video src="#video2" width="1" height="1.5" position="0 0 0"></a-video>
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const playBtn = document.querySelector('#play-btn');
+    const video = document.querySelector('#video2');
+
+    playBtn.addEventListener('click', () => {
+      // Inicia a reprodução do vídeo após interação do usuário
+      video.play().catch(err => console.log('Aguardando interação:', err));
+      // Esconde o botão da tela
+      playBtn.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
